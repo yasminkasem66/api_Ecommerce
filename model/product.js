@@ -26,9 +26,17 @@ const productSchema = new mongoose.Schema(
         numReviews: { type: Number, required: true },
         reviews: [reviewSchema],
     },
-    // {
-    //     timestamps: true,
-    // }
+    {
+        timestamps: true,
+    },
+     {
+        writeConcern: {
+            w: 'majority',
+            j: true,
+            wtimeout: 1000
+   }
+    }
+    
 );
 
 module.exports = mongoose.model('Product', productSchema) // create collection fe db --> 2 params 1- name of collection

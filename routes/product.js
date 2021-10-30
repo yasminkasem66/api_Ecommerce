@@ -13,12 +13,10 @@ const products = require('../controller/product');
 
 
 router.post('/', products.createProduct)
-
 router.get('/', products.getAllProduct)
 router.get('/:id', products.getSingleProduct)
-
 router.delete('/:id', products.deleteProduct)
-// router.put('/:id', products.update) 
+router.put('/:id', products.updateProduct)
 
 
 module.exports = router

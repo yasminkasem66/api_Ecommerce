@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();//create our server
-const port = 3000;
+const port = 4000;
 const connectDB = require("./db")
 
 const productRouter = require("./routes/product");

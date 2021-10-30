@@ -1,118 +1,91 @@
 const products = require("../model/product");
 
-exports.createProduct = (req, response ) => {
-    const product = new products({
-        name: req.body.name,
-        category: req.body.category,
-        image: req.body.image,
-        price: req.body.price,
-        countInStock: req.body.countInStock,
-        brand: req.body.brand,
-        rating: req.body.rating,
-        numReviews: req.body.numReviews,
-        description: req.body.description,
-    })
-
-    product.save()
-    return response.send(product)
-        .then(data => {
-            return      response.send(data)
-        }).catch(err => {
-            return   response.send(err)
-        })
-}
-
-
-// exports.createProduct = async (req, response ) => {
-//     const product = await products.create(req.body);
-//     response .status(200).json({ product });
-// };
 
 
 
-exports.getAllProduct = async (req, response ) => {
+//////////////////////////////// createProduct
+exports.createProduct = async (req, res) => {
     try {
-        await products.find({})
-            .then(data => {
-                response .send(data)
-            }).catch(err => {
-                response .send(err)
-            })
-    } catch (error) {
-        console.log(error);
+        const product = await products.create(req.body);
+        res.status(200).json({ product })
+    } catch (err) {
+        res.status(500).json({ msg: err })
     }
 
-}
-
-// exports.getSingleProduct = async (req, response ) => {
-//     try {
-//     const { id: productId } = req.params;
-//     products.findOne({ _id: productId }).then(data => {
-//        response .status(200).send(data)
-//     }).catch(err => {
-//        response .status(400).send(err)
-//     })
-//     } catch (error) {
-//         console.log(error);
-//     }
-// };
-
-
-// exports.getSingleProduct = async (req, response , next) => {
-//     try {
-//         products.findOne({ _id: req.params.id }, function (err, product) {
-//             if (err) response .status(400).send(err);
-//             response .status(200).send(product);
-//         });
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
-
-exports.getSingleProduct = async (req, response ) => {
-    const { id: productId } = req.params;
-    const product = await products.findOne({ _id: productId });
-    if (!product) {
-        throw new CustomError.NotFoundError(`No product with id : ${productId}`);
-    }
-    response .status(200).json({ product });
 };
 
+//////////////////////////////// getAllProduct
 
-// exports.deleteProduct = (req, response ) => {
-//     products.remove({  _id: req.params.id }) .then(todo => {
-//             response .send(todo)
-//         })
-// }
+exports.getAllProduct = async (req, res ) => {
+    try {
+        const productsAll = await products.find({})
+        res.status(201).json({ products: productsAll })
+        
+    } catch (err) {
+        res.status(500).json({ msg: err })
+    }
 
-
-////////////////////////////////
-
-
-
-
-exports.deleteProduct =  (req, response ) => {
-
-         products.findOneAndDelete({ _id: req.params.id })
-        .then(data => {
-            response.success(req, response , data, 200)
-        }).catch(err => {
-            response.error(req, response , 'Internal error', 500, err)
-        })
-    response .send('Ok')
 }
 
 
-// exports.deleteProduct = async (req, response ) => {
-//     const { id: productId } = req.params;
-//     const product = await products.findOne({ _id: productId });
-//     if (!product) {
-//         throw (`No product with id : ${productId}`);
-//     }
-//     await product.remove();
-//     response .status(401).json({ msg: 'Success! Product removed.' });
-// };
 
+//////////////////////////////// getSingleProduct 
+exports.getSingleProduct = async (req, res) => {
+    try {
+        const { id: productID } = req.params
+        const product = await products.findOne({ _id: productID })
+        if (!product) {
+            return res.status(404).json({ msg: ` no product with id ${productID}` })
+        }
+        res.status(200).json({product })
+        // res.status(200).send( )
+        // res.status(200).json({ product: null, status: 'success' })
 
+    } catch (err) {
+        res.status(500).json({ msg: err })
+    }
+
+}
+
+//////////////////////////////// Update
+    exports.updateProduct = async (req, res) => {
+        try {
+            const { id: productID } = req.params
+
+            //there is an options that we pass for the update function
+            const product = await products.findOneAndUpdate({ _id: productID }, req.body, {
+                new: true,
+                runValidators: true
+            })
+            if (!product) {
+                return res.status(404).json({ msg: ` no product with id ${productID}` })
+            }
+            res.status(200).json({ product })
+            // res.status(200).send( )
+            // res.status(200).json({ id: productID, data: req.body})
+
+        } catch (err) {
+            res.status(500).json({ msg: err })
+        }
+
+    }
+
+//////////////////////////////// Delete
+exports.deleteProduct = async (req, res) => {
+    try {
+        const { id: productID } = req.params
+        const product = await products.findOneAndDelete({ _id: productID })
+        if (!product) {
+            return res.status(404).json({ msg: ` noproduct with id ${productID}` })
+        }
+        res.status(200).json({product })
+        // res.status(200).send( )
+        // res.status(200).json({ product: null, status: 'success' })
+
+    } catch (err) {
+        res.status(500).json({ msg: err })
+    }
+
+}
 
 
